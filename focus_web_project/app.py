@@ -1,6 +1,3 @@
-from dotenv import load_dotenv
-load_dotenv()
-# 윗 부분은 박희서가 함 #########################
 import os
 import math
 import base64
