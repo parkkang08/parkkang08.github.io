@@ -52,7 +52,8 @@ let countScore = 0;
 );
   }
 }
-// ==== 유틸 ====function toSeconds(min, sec) {
+// ==== 유틸 ====
+function toSeconds(min, sec) {
   const m = Math.max(0, Number(min) || 0);
   const s = Math.min(59, Math.max(0, Number(sec) || 0));
   return m * 60 + s;
