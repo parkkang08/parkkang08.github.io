@@ -41,7 +41,8 @@ const HOLD_SEC  = 3;
 const INTERVAL  = 600;
 // === 세션 평균용 누적 ===let sumScore = 0;
 let countScore = 0;
-// === 주기 종료 알림 ===function endCycleNotify(state) {
+// === 주기 종료 알림 ===
+function endCycleNotify(state) {
   const audio = state === 'focus' ? document.getElementById('endSound') : document.getElementById('startSound');
   if (audio) {
     audio.pause();
