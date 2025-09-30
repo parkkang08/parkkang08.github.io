@@ -16,27 +16,20 @@ const modeTextEl  = document.getElementById('modeText');
 const countdownEl = document.getElementById('countdown');
 const elapsedEl   = document.getElementById('elapsed');
 const bannerEl    = document.getElementById('banner');
-// ==== 소리 ====
-// 휴식 시작 = start.mp3, 공부 시작 = end.mp3
-const startSound = new Audio("/static/start.mp3");
- // 휴식 시작 / 공부 종료
-const endSound   = new Audio("/static/end.mp3");
-   // 공부 시작 / 휴식 종료
-startSound.preload = "auto";
+// ==== 소리 ====// 휴식 시작 = start.mp3, 공부 시작 = end.mp3const startSound = new Audio("/static/start.mp3");
+ // 휴식 시작 / 공부 종료const endSound   = new Audio("/static/end.mp3");
+   // 공부 시작 / 휴식 종료startSound.preload = "auto";
 endSound.preload   = "auto";
-// ==== 상태 ====
-let running    = false;
+// ==== 상태 ====let running    = false;
 let lastState  = 'idle';
 let stateStart = null;
 let avg        = null;
-  // 지수이동평균(최근 흐름)
-let maxScore   = 0;
+  // 지수이동평균(최근 흐름)let maxScore   = 0;
 let mediaStream = null;
 let previewOn  = true;
 let alarmOn     = true;
 let vibrationOn = true;
-// ▶ 집중 판정 기준(튜닝 A 적용)
-const THRESHOLD = 55;
+// ▶ 집중 판정 기준(튜닝 A 적용)const THRESHOLD = 55;
 let studySeconds = toSeconds(studyMinInput?.value ?? 25, studySecInput?.value ?? 0);
 let breakSeconds = toSeconds(breakMinInput?.value ?? 5,  breakSecInput?.value ?? 0);
 let mode = 'idle';
@@ -46,24 +39,20 @@ let sessionStart = null;
 const suppressAlertsDuringBreak = true;
 const HOLD_SEC  = 3;
 const INTERVAL  = 600;
-// === 세션 평균용 누적 ===
-let sumScore = 0;
+// === 세션 평균용 누적 ===let sumScore = 0;
 let countScore = 0;
-// === 주기 종료 알림 ===
-function endCycleNotify(state) {
+// === 주기 종료 알림 ===function endCycleNotify(state) {
   const audio = state === 'focus' ? document.getElementById('endSound') : document.getElementById('startSound');
   if (audio) {
     audio.pause();
-        // 현재 재생 중이면 중단
-   audio.currentTime = 0;
+        // 현재 재생 중이면 중단    audio.currentTime = 0;
     audio.play().catch(e => {
       console.warn("오디오 재생 실패:", e);
     }
 );
   }
 }
-// ==== 유틸 ====
-function toSeconds(min, sec) {
+// ==== 유틸 ====function toSeconds(min, sec) {
   const m = Math.max(0, Number(min) || 0);
   const s = Math.min(59, Math.max(0, Number(sec) || 0));
   return m * 60 + s;
@@ -96,8 +85,7 @@ String(m).padStart(2,'0')}
 String(s).padStart(2,'0')}
 `;
 }
-// 브라우저 자동재생 권한 확보
-function unlockAudio() {
+// 브라우저 자동재생 권한 확보function unlockAudio() {
   const p1 = startSound.play().then(()=>{
  startSound.pause();
  startSound.currentTime = 0;
@@ -114,21 +102,18 @@ function unlockAudio() {
 );
   Promise.allSettled([p1, p2]);
 }
-// ==== 카메라 ====
-navigator.mediaDevices.getUserMedia({
+// ==== 카메라 ====navigator.mediaDevices.getUserMedia({
  video: true }
 )  .then(stream => {
  mediaStream = stream;
  video.srcObject = stream;
  }
 )  .catch(err => alert('카메라 권한이 필요합니다: ' + err.message));
-// ==== 시작/정지 ====
-startBtn.onclick = async () => {
+// ==== 시작/정지 ====startBtn.onclick = async () => {
   unlockAudio();
   // 세션 평균 리셋  sumScore = 0;
   countScore = 0;
-  // 시작 시: 공부 시작 소리(end.mp3) 
- playEndSound();
+  // 시작 시: 공부 시작 소리(end.mp3)  playEndSound();
   running = true;
   startBtn.disabled = true;
   stopBtn.disabled  = false;
@@ -155,15 +140,13 @@ stopBtn.onclick = () => {
   updateTimerUI();
 }
 ;
-// ==== 미리보기 on/off ====
-previewBtn?.addEventListener('click', ()=>{
+// ==== 미리보기 on/off ====previewBtn?.addEventListener('click', ()=>{
   previewOn = !previewOn;
   video.style.visibility = previewOn ? 'visible' : 'hidden';
   previewBtn.textContent = previewOn ? '미리보기 끄기' : '미리보기 켜기';
 }
 );
-// ==== 알람/진동 토글 ====
-alarmToggleBtn?.addEventListener('click', ()=>{
+// ==== 알람/진동 토글 ====alarmToggleBtn?.addEventListener('click', ()=>{
   alarmOn = !alarmOn;
   alarmToggleBtn.textContent = alarmOn ? '알람 끄기' : '알람 켜기';
 }
@@ -173,15 +156,13 @@ vibrationToggleBtn?.addEventListener('click', ()=>{
   vibrationToggleBtn.textContent = vibrationOn ? '진동 끄기' : '진동 켜기';
 }
 );
-// ==== 시간 적용 ====
- applyTimeBtn?.addEventListener('click', ()=>{
+// ==== 시간 적용 ====applyTimeBtn?.addEventListener('click', ()=>{
   studySeconds = toSeconds(studyMinInput.value, studySecInput.value);
   breakSeconds = toSeconds(breakMinInput.value, breakSecInput.value);
   if (!running || mode === 'idle') updateTimerUI();
 }
 );
-// ==== 분석 루프 ====
-async function loop() {
+// ==== 분석 루프 ====async function loop() {
   while (running) {
     const img   = captureFrame();
     const score = await analyze(img);
@@ -215,11 +196,9 @@ async function analyze(imageDataURL) {
   }
 }
 function updateUI(score) {
-  // 최근 흐름(EMA)  
- avg = (avg === null) ? score : (avg * 0.7 + score * 0.3);
+  // 최근 흐름(EMA)  avg = (avg === null) ? score : (avg * 0.7 + score * 0.3);
   const rounded = Math.round(avg);
-  // 세션 평균 누적
- sumScore += score;
+  // 세션 평균 누적  sumScore += score;
   countScore++;
   const sessionAvg = Math.round(sumScore / Math.max(1, countScore));
   if (rounded > maxScore) {
@@ -267,8 +246,7 @@ newState === 'focus' ? '집중' : '비집중'}
     belowSince = null;
   }
 }
-// ==== 타이머 ====
-function startStudyCycle() {
+// ==== 타이머 ====function startStudyCycle() {
   mode = 'study';
   remainingSec = Math.max(1, Math.floor(studySeconds));
   sessionStart = sessionStart ?? new Date();
@@ -290,14 +268,12 @@ function tickTimer() {
     remainingSec = Math.max(0, remainingSec - 1);
     if (remainingSec === 0) {
       if (mode === 'study') {
-        // 공부 끝 → 휴식 시작 (start.mp3)      
-       playStartSound();
+        // 공부 끝 → 휴식 시작 (start.mp3)        playStartSound();
         endCycleNotify('공부 종료! 휴식 시작');
         startBreakCycle();
       }
  else {
-        // 휴식 끝 → 공부 시작 (end.mp3)   
-  playEndSound();
+        // 휴식 끝 → 공부 시작 (end.mp3)        playEndSound();
         endCycleNotify('휴식 종료! 공부 시작');
         startStudyCycle();
       }
@@ -305,8 +281,7 @@ function tickTimer() {
   }
   updateTimerUI();
 }
-// ==== 소리 재생 ====
-function playStartSound(){
+// ==== 소리 재생 ====function playStartSound(){
   try {
  endSound.pause();
  }
@@ -328,8 +303,7 @@ function playEndSound(){
 }
 );
 }
-// ==== UI 업데이트 ====
-function endCycleNotify(msg) {
+// ==== UI 업데이트 ====function endCycleNotify(msg) {
   showBanner(msg, 'info');
   if (Notification && Notification.permission === 'granted') new Notification(msg);
 }
@@ -362,8 +336,7 @@ function showBanner(message, type='ok') {
  }
 , 2500);
 }
-// ==== 서버 로그 저장 ====
-async function sendSegment(state, startTime, endTime) {
+// ==== 서버 로그 저장 ====async function sendSegment(state, startTime, endTime) {
   try {
     await fetch('/log', {
       method: 'POST',      headers: {

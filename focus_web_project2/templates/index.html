@@ -559,12 +559,6 @@
 
       smooth=ema(smooth,c,0.35);
       const s=Math.round(clamp(smooth,0,1)*100);
-
-      if(scoreEl){
-        scoreEl.textContent=`집중도 ${s}%`;
-        scoreEl.classList.remove('focus','distract');
-        scoreEl.classList.add(s>=60?'focus':'distract');
-      }
       if(maxEl){ best=Math.max(best,s); maxEl.textContent=`최고 집중도: ${best}%`; }
     }
     async function loop(){
