@@ -129,7 +129,7 @@ startBtn.onclick = async () => {
 sumScore = 0;
   countScore = 0;
   // 시작 시: 공부 시작 소리
- (end.mp3)  playEndSound();
+  playEndSound();
   running = true;
   startBtn.disabled = true;
   stopBtn.disabled  = false;
