@@ -16,11 +16,12 @@ const modeTextEl  = document.getElementById('modeText');
 const countdownEl = document.getElementById('countdown');
 const elapsedEl   = document.getElementById('elapsed');
 const bannerEl    = document.getElementById('banner');
-// ==== 소리 ====//
-휴식 시작 = start.mp3, 공부 시작 = end.mp3const startSound = new Audio("/static/start.mp3");
- // 휴식 시작 / 공부 종료
+// ==== 소리 ====
+//휴식 시작 = start.mp3, 공부 시작 = end.mp3
+const startSound = new Audio("/static/start.mp3");
+// 휴식 시작 / 공부 종료
 const endSound   = new Audio("/static/end.mp3");
-   // 공부 시작 / 휴식 종료
+// 공부 시작 / 휴식 종료
 startSound.preload = "auto";
 endSound.preload   = "auto";
 // ==== 상태 ====
@@ -28,7 +29,7 @@ let running    = false;
 let lastState  = 'idle';
 let stateStart = null;
 let avg        = null;
-  // 지수이동평균(최근 흐름)
+// 지수이동평균(최근 흐름)
 let maxScore   = 0;
 let mediaStream = null;
 let previewOn  = true;
